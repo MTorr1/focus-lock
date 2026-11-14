@@ -164,7 +164,7 @@ function renderList(list: ListView): HTMLElement {
 
 function patternForm(list: ListView): HTMLFormElement {
   const form = document.createElement("form");
-  form.innerHTML = `<label>URL or pattern <input name="pattern" required placeholder="youtube.com/shorts/*" /></label><button type="submit">Add</button>`;
+  form.innerHTML = `<label class="field">URL or pattern <input name="pattern" required placeholder="youtube.com/shorts/*" /></label><button type="submit">Add</button>`;
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const pattern = String(new FormData(form).get("pattern") ?? "");
@@ -178,7 +178,36 @@ function patternForm(list: ListView): HTMLFormElement {
 
 function lockForm(list: ListView): HTMLFormElement {
   const form = document.createElement("form");
-  form.innerHTML = `<label>Lock until <input name="end" type="datetime-local" required /></label><label><input name="confirm" type="checkbox" /> I understand I cannot turn this off, delete the list, or remove URLs until that time.</label><button type="submit">Lock list</button>`;
+  const block = document.createElement("fieldset");
+  block.className = "list-block";
+  const legend = document.createElement("legend");
+  legend.textContent = "Manual lock";
+  block.append(legend);
+  const end = document.createElement("input");
+  end.type = "datetime-local";
+  end.name = "end";
+  end.required = true;
+  block.append(labeled("Lock until", end));
+  const confirm = document.createElement("label");
+  confirm.className = "confirm";
+  const confirmBox = document.createElement("input");
+  confirmBox.type = "checkbox";
+  confirmBox.name = "confirm";
+  confirm.append(
+    confirmBox,
+    document.createTextNode(
+      "I understand I cannot turn this off, delete the list, or remove URLs until that time.",
+    ),
+  );
+  block.append(confirm);
+  const actions = document.createElement("div");
+  actions.className = "form-actions";
+  const submit = document.createElement("button");
+  submit.type = "submit";
+  submit.textContent = "Lock list";
+  actions.append(submit);
+  block.append(actions);
+  form.append(block);
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const data = new FormData(form);
@@ -196,6 +225,11 @@ function lockForm(list: ListView): HTMLFormElement {
 
 function scheduleForm(list: ListView): HTMLElement {
   const form = document.createElement("form");
+  const block = document.createElement("fieldset");
+  block.className = "list-block";
+  const legend = document.createElement("legend");
+  legend.textContent = "Weekly schedule";
+  block.append(legend);
   const days = document.createElement("div");
   days.className = "days";
   for (let day = 0; day < 7; day += 1) {
@@ -208,7 +242,9 @@ function scheduleForm(list: ListView): HTMLElement {
     label.append(box, document.createTextNode(DAY_NAMES[day]));
     days.append(label);
   }
-  form.append(days);
+  block.append(days);
+  const row = document.createElement("div");
+  row.className = "form-row";
   const start = document.createElement("input");
   start.type = "time";
   start.name = "start";
@@ -224,25 +260,36 @@ function scheduleForm(list: ListView): HTMLElement {
   commitment.name = "commitmentDate";
   commitment.required = true;
   commitment.value = list.schedule?.commitmentDate ?? "";
-  form.append(labeled("Start", start), labeled("End", end), labeled("Commit until", commitment));
+  row.append(labeled("Start", start), labeled("End", end), labeled("Commit until", commitment));
+  block.append(row);
   const confirm = document.createElement("label");
+  confirm.className = "confirm";
   const confirmBox = document.createElement("input");
   confirmBox.type = "checkbox";
   confirmBox.name = "confirm";
-  confirm.append(confirmBox, document.createTextNode(" I understand I cannot weaken this schedule until the end date, including between blocking sessions."));
-  form.append(confirm);
+  confirm.append(
+    confirmBox,
+    document.createTextNode(
+      "I understand I cannot weaken this schedule until the end date, including between blocking sessions.",
+    ),
+  );
+  block.append(confirm);
+  const actions = document.createElement("div");
+  actions.className = "form-actions";
   const save = document.createElement("button");
   save.type = "submit";
   save.textContent = list.scheduleCommitted ? "Update schedule" : "Commit schedule";
-  form.append(save);
+  actions.append(save);
   if (list.schedule && !list.scheduleCommitted) {
     const clear = document.createElement("button");
     clear.type = "button";
     clear.className = "secondary";
     clear.textContent = "Remove schedule";
     clear.addEventListener("click", () => void send({ type: "command", command: { type: "clear-schedule", id: list.id } }));
-    form.append(clear);
+    actions.append(clear);
   }
+  block.append(actions);
+  form.append(block);
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const data = new FormData(form);
@@ -265,6 +312,7 @@ function scheduleForm(list: ListView): HTMLElement {
 
 function labeled(text: string, input: HTMLInputElement): HTMLLabelElement {
   const label = document.createElement("label");
+  label.className = "field";
   label.append(document.createTextNode(text), input);
   return label;
 }
