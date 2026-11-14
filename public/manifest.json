@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Focus Lock",
+  "version": "0.1.0",
+  "description": "Block sites and URL paths you choose until a lock or committed schedule ends.",
+  "permissions": ["declarativeNetRequest", "webNavigation", "storage", "alarms"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Focus Lock"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["blocked.html"],
+      "matches": ["http://*/*", "https://*/*"]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["history-hook.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["guard.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

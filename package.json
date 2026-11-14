@@ -1,0 +1,17 @@
+{
+  "name": "focus-lock",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "tsc --noEmit && node --test src/*.test.ts",
+    "check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.1.24",
+    "@types/node": "^24.10.1",
+    "esbuild": "^0.25.11",
+    "typescript": "^5.9.3"
+  }
+}
