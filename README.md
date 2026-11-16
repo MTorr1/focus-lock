@@ -60,7 +60,7 @@ Sync keeps the newer revision. An older cloud copy does not replace newer local 
 - The extension card shows Errors: the manifest or a script failed to load. A missing `blocked.html` web-accessible resource is reported when a redirect runs.
 - Service worker → Inspect: a crash while applying rules or saving state. Reload the extension after fixing it.
 - A typed `/shorts` URL still opens YouTube: the list is not locked, the pattern does not include that host (`www` and the bare host are different), or the service worker did not register rules. Inspect the service worker.
-- Shorts still plays after a click inside YouTube: the page-context hook or `webNavigation` missed that navigation. The isolated script should still redirect a moment later. If it never does, reload the extension and confirm both content scripts are listed.
+- Shorts still plays after a click inside YouTube: the page-context hook or `webNavigation` missed that navigation, or YouTube kept you on `/` / `/watch` while the Shorts player ran. Rebuild, reload the extension, and confirm both patterns are on a **locked** list. Home and feed Shorts are checked using the `/shorts/…` path plus on-page Shorts UI when the address bar never changes.
 - The whole site is blocked: the entry is a host, such as `youtube.com`, rather than a section ending in `/*`.
 
 ## Checks to do by hand
